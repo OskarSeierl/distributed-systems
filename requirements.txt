@@ -1,0 +1,9 @@
+questionary
+flask
+flask-cors
+uvicorn
+pycryptodome
+requests
+python-dotenv
+python-multipart
+texttable

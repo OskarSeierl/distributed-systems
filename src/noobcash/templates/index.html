@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoobCash Node</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>NoobCash Node Interface <button class="refresh-btn" onclick="refreshAll()">Refresh Data</button></h1>
+
+        <div class="grid-container">
+            <div class="card" id="node-info">
+                <h2>Node Information</h2>
+                <p>Loading...</p>
+            </div>
+
+            <div class="card">
+                <h2>Create Transaction</h2>
+                <div style="margin-top: 15px;">
+                    <input type="number" id="receiver-id" placeholder="Receiver ID">
+                    <input type="number" id="amount" placeholder="Amount">
+                    <button onclick="createTransaction()">Send</button>
+                </div>
+                <div id="tx-status"></div>
+            </div>
+
+            <div class="card full-width">
+                <h2>Last Block Transactions</h2>
+                <div id="transactions" class="transaction-list">
+                    <p>Loading...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function getNodeInfo() {
+            try {
+                const response = await fetch('/api/node_info');
+                const data = await response.json();
+                document.getElementById('node-info').innerHTML = `
+                    <h2>Node Information</h2>
+                    <p><strong>ID:</strong> ${data.id}</p>
+                    <p><strong>IP:</strong> ${data.ip}</p>
+                    <p><strong>Port:</strong> ${data.port}</p>
+                    <p><strong>Address:</strong> ${data.address}</p>
+                    <p><strong>Balance:</strong> ${data.balance} NBC</p>
+                `;
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function viewTransactions() {
+            try {
+                const response = await fetch('/api/view_transactions');
+                const data = await response.json();
+
+                let html = '';
+                if (Array.isArray(data)) {
+                    html += '<ul>';
+                    data.forEach(tx => {
+                        html += `<li>From: ${tx.sender_id} To: ${tx.receiver_id} Amount: ${tx.amount}</li>`;
+                    });
+                    html += '</ul>';
+                } else {
+                    html += `<p>${data}</p>`;
+                }
+                document.getElementById('transactions').innerHTML = html;
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function createTransaction() {
+            const receiverId = document.getElementById('receiver-id').value;
+            const amount = document.getElementById('amount').value;
+            const statusDiv = document.getElementById('tx-status');
+
+            if (!receiverId || !amount) {
+                statusDiv.innerHTML = '<p style="color: red;">Please fill all fields</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/create_transaction/${receiverId}/${amount}`);
+                const data = await response.json();
+
+                if (response.ok) {
+                    statusDiv.innerHTML = '<p style="color: green;">Transaction Successful!</p>';
+                    document.getElementById('receiver-id').value = '';
+                    document.getElementById('amount').value = '';
+                    setTimeout(refreshAll, 1000);
+                } else {
+                    statusDiv.innerHTML = `<p style="color: red;">Error: ${data.message || 'Unknown error'}</p>`;
+                }
+            } catch (e) {
+                statusDiv.innerHTML = `<p style="color: red;">Error: ${e.message}</p>`;
+            }
+        }
+
+        function refreshAll() {
+            getNodeInfo();
+            viewTransactions();
+        }
+
+        // Load all data on page load
+        refreshAll();
+    </script>
+</body>
+</html>
