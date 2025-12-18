@@ -85,6 +85,7 @@ def main():
     # Log configuration for reproducibility
     capacity = os.getenv('BLOCK_SIZE', 'Unknown')
     difficulty = os.getenv('MINING_DIFFICULTY', 'Unknown')
+    bootstrap_port = os.getenv('BOOTSTRAP_PORT')
 
     print(f"--- CONFIGURATION ---")
     print(f"Nodes: {args.nodes}")
@@ -98,7 +99,7 @@ def main():
 
     # 3. Load Network Addresses
     # Generate localhost addresses: 127.0.0.1:8000, 127.0.0.1:8001, ...
-    nodes = [f"127.0.0.1:{8000 + i}" for i in range(args.nodes)]
+    nodes = [f"127.0.0.1:{int(bootstrap_port) + i}" for i in range(args.nodes)]
 
     # 4. Start Threads
     # We create one thread per node. Each thread reads its specific transaction file
