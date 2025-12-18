@@ -287,8 +287,8 @@ class Node:
         url = f"http://{node['ip']}:{node['port']}/get_block"
         try:
             requests.post(url, data=pickle.dumps(block), timeout=5)
-        except requests.exceptions.RequestException:
-            Logger.error(f"Failed to unicast block to Node {node.get('id', '?')}")
+        except requests.exceptions.RequestException as e:
+            Logger.error(f"Failed to unicast block to Node {node.get('id', '?')}, because of: {e}")
 
     def broadcast_block(self, block: Block):
         """
