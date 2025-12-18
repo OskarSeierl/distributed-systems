@@ -1,4 +1,5 @@
 from datetime import datetime
+import threading
 
 class Logger:
     """
@@ -14,6 +15,7 @@ class Logger:
         :param level: The severity level (INFO, WARNING, ERROR, SUCCESS).
         """
         timestamp = datetime.now().strftime("%H:%M:%S")
+        thread_name = threading.current_thread().name
 
         icons = {
             "INFO": "ℹ️",
@@ -25,8 +27,13 @@ class Logger:
         }
 
         icon = icons.get(level, "")
-        formatted_msg = f"[{timestamp}] {icon} {message}"
-        print(formatted_msg)
+        # Include thread name for background threads
+        if thread_name == "MainThread":
+            formatted_msg = f"[{timestamp}] {icon} {message}"
+        else:
+            formatted_msg = f"[{timestamp}] [{thread_name}] {icon} {message}"
+
+        print(formatted_msg, flush=True)
 
     @staticmethod
     def info(message: str):
@@ -51,4 +58,3 @@ class Logger:
     @staticmethod
     def network(message: str):
         Logger.log(message, "NETWORK")
-
