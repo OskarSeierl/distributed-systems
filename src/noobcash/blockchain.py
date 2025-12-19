@@ -3,6 +3,7 @@ import requests
 import pickle
 import os
 from src.utils.logger import Logger
+from copy import deepcopy
 
 load_dotenv()
 BLOCK_SIZE = int(os.getenv('BLOCK_SIZE'))
@@ -80,16 +81,9 @@ class Blockchain:
                 # 4. Replace local chain
                 node.blockchain = new_chain
 
-                # Log success with visual separator
-                log_message = (
-                    f"\n{'=' * 40}\n"
-                    f"Chain replaced\n"
-                    f"{'=' * 40}\n"
-                    f"Source:      Node {best_node['id']}\n"
-                    f"New Length:  {len(node.blockchain.chain)}\n"
-                    f"{'=' * 40}\n"
+                Logger.success(
+                    f"Chain replaced | Source: Node {best_node['id']} | New Length: {len(node.blockchain.chain)}"
                 )
-                Logger.success(log_message)
                 return
 
             except Exception as e:

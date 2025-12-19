@@ -27,13 +27,7 @@ class Logger:
         }
 
         icon = icons.get(level, "")
-        # Include thread name for background threads
-        if thread_name == "MainThread":
-            formatted_msg = f"[{timestamp}] {icon} {message}"
-        else:
-            formatted_msg = f"[{timestamp}] [{thread_name}] {icon} {message}"
-
-        print(formatted_msg, flush=True)
+        print(f"[{timestamp}] [{thread_name}] {icon} {message}", flush=True)
 
     @staticmethod
     def info(message: str):

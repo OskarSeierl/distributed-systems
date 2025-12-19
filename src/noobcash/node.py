@@ -68,7 +68,12 @@ class Node:
             self.create_new_block()
 
         if not self.is_mining:
-            threading.Thread(target=self.mine_process, daemon=True).start()
+            mining_thread = threading.Thread(
+                target=self.mine_process,
+                daemon=True,
+                name="MinerThread"
+            )
+            mining_thread.start()
 
     # --- State & UTXO Management ---
 
@@ -91,17 +96,10 @@ class Node:
         self.ring[sender_addr]['balance'] -= tx.amount
         self.ring[receiver_addr]['balance'] += tx.amount
 
-        # Formatted log message for Transactions
-        log_message = (
-            f"\n{'=' * 40}\n"
-            f"New Transaction\n"
-            f"{'=' * 40}\n"
-            f"From Node: {sender_id}\n"
-            f"To Node:   {receiver_id}\n"
-            f"Amount:    {tx.amount} NBC\n"
-            f"{'=' * 40}\n"
+        # Single-line transaction log
+        Logger.info(
+            f"New Transaction | {sender_id} --> {receiver_id} | {tx.amount}NBC"
         )
-        Logger.info(log_message)
 
     def _process_utxo_update(self, utxo_set, tx: Transaction):
         """
@@ -156,6 +154,7 @@ class Node:
         self.is_mining = True
 
         while self.pending_transactions:
+            Logger.info("Pending Transaction: " + self.transaction_to_string(self.pending_transactions))
             tx = self.pending_transactions.pop()
 
             if tx.transaction_id in self.blockchain.transactions_set:
@@ -167,23 +166,14 @@ class Node:
                 self.update_temp_utxos(tx)
 
                 if len(self.current_block.transactions_list) == BLOCK_SIZE:
-                    Logger.mining("Block Full. Starting Proof-of-Work...")
-
+                    Logger.mining(
+                        f"Block Full. Starting Proof-of-Work for transactions: {self.transaction_to_string(self.current_block.transactions_list)}")
                     if self.mine_block(self.current_block):
                         with self.processing_block_lock:
                             if not self.incoming_block and self.current_block.validate_block(self.blockchain):
-                                # Formatted log message for Mining Success
-                                log_message = (
-                                    f"\n{'=' * 40}\n"
-                                    f"Block mined successfully \n"
-                                    f"{'=' * 40}\n"
-                                    f"Miner:        Node {self.id}\n"
-                                    f"Hash:         {self.current_block.hash[:15]}...\n"
-                                    f"Transactions: {len(self.current_block.transactions_list)}\n"
-                                    f"Nonce:        {self.current_block.nonce}\n"
-                                    f"{'=' * 40}\n"
+                                Logger.mining(
+                                    f"Block mined successfully | Miner: Node {self.id} | Hash: {self.current_block.hash[:15]}... | Transactions: {len(self.current_block.transactions_list)} | Nonce: {self.current_block.nonce}"
                                 )
-                                Logger.mining(log_message)
 
                                 self.blockchain.chain.append(self.current_block)
                                 self.blockchain.UTXOs = deepcopy(self.temp_utxos)
@@ -400,3 +390,16 @@ class Node:
             if self.id != self.ring[node_address]['id']:
                 self.unicast_initial_nbc(node_address)
         Logger.network("Initial NBC distribution complete.")
+
+    def transaction_to_string(self, transactions):
+        """
+        Returns a string representation of pending transactions for logging.
+
+        :return: A formatted string of pending transactions.
+        """
+        tx_strings = []
+        for tx in transactions:
+            sender_id = self.ring[str(tx.sender_address)]['id']
+            receiver_id = self.ring[str(tx.receiver_address)]['id']
+            tx_strings.append(f"({sender_id} -> {receiver_id}: {tx.amount} NBC)")
+        return ", ".join(tx_strings)
