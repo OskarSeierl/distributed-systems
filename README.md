@@ -52,9 +52,11 @@ Open your web browser and visit `http://127.0.0.1:<port>`, e.g. http://127.0.0.1
 Simply execute the client python script by running `python -m src.client.client` in your terminal.
 
 ### Automated Testing
-To run the given tests in `testing/`, execute `python src/noobcash/test.py`.
+To run the given tests in `testing/`, execute `python -m src.noobcash.test --nodes [5/10]`.
 This will run all the test cases and save the results in a `.txt` file in the same folder.
 Make sure that all nodes are running before executing the tests.
+
+The result file will contain lines with the following format: [block_num], [current_time], [time_since_last_block].
 
 ## Environment Variables
 - `API_IP`: The IP address for the API server
@@ -63,6 +65,9 @@ Make sure that all nodes are running before executing the tests.
 - `MINING_DIFFICULTY`: The difficulty level for mining
 
 These variables can be set in a `.env` file or directly in the environment before running the application.
+
+## Measurements
+TODO
 
 ## Explanation of the Project
 ### Classes
@@ -86,9 +91,15 @@ TODO
 ### General Description
 TODO
 
-### Measurements
-TODO
+## Problems Encountered
+### Transaction Loss
+An early issue was caused by removing transactions from the pending pool before a block was successfully mined.
+When mining was interrupted by an incoming block from the network, these transactions were neither included in the blockchain nor reinserted into the pending pool, leading to lost transactions.
 
-__!!! TODO !!!__
-EXPLAIN ALL THE DIFFERENT PYTHON CLASSES AND THE GENERAL ARCHITECTURE OF THE PROJECT
+### Infinite Mining Loop
+Another problem occurred when transactions became invalid due to changes in the UTXO set (e.g., insufficient funds after other transactions were confirmed).
+Since invalid transactions were not removed from the pending pool, the miner repeatedly retried them, resulting in an infinite validation loop.
 
+### State Inconsistency During Mining
+Mining initially reused the global UTXO state, causing inconsistencies between transaction creation and validation.
+This was resolved by introducing a temporary UTXO set for each mining round, ensuring that transaction validation during mining reflects a consistent and isolated state.

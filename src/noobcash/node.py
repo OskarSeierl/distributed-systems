@@ -148,44 +148,87 @@ class Node:
 
     def mine_process(self):
         """
-        The main mining loop. Processes pending transactions and attempts to find a valid block nonce.
-        Logs a formatted message upon successful mining.
+        Main mining loop.
+        - Uses temp UTXOs
+        - Does NOT lose transactions
+        - Drops permanently invalid transactions
+        - Safely handles incoming blocks
         """
+
         self.is_mining = True
 
-        while self.pending_transactions:
-            Logger.info("Pending Transaction: " + self.transaction_to_string(self.pending_transactions))
-            tx = self.pending_transactions.pop()
+        # 🔑 Initialize temporary UTXO state for this mining round
+        self.temp_utxos = deepcopy(self.blockchain.UTXOs)
 
+        while self.pending_transactions:
+
+            Logger.info(
+                "Pending Transaction: " +
+                self.transaction_to_string(self.pending_transactions)
+            )
+
+            # Peek — do NOT remove yet
+            tx = self.pending_transactions[-1]
+
+            # Already confirmed elsewhere → drop
             if tx.transaction_id in self.blockchain.transactions_set:
+                self.pending_transactions.pop()
                 continue
 
             sender_id = self.ring[str(tx.sender_address)]['id']
-            if tx.validate_transaction(sender_id, self.temp_utxos):
-                self.current_block.transactions_list.append(tx)
-                self.update_temp_utxos(tx)
 
-                if len(self.current_block.transactions_list) == BLOCK_SIZE:
-                    Logger.mining(
-                        f"Block Full. Starting Proof-of-Work for transactions: {self.transaction_to_string(self.current_block.transactions_list)}")
-                    if self.mine_block(self.current_block):
-                        with self.processing_block_lock:
-                            if not self.incoming_block and self.current_block.validate_block(self.blockchain):
-                                Logger.mining(
-                                    f"Block mined successfully | Miner: Node {self.id} | Hash: {self.current_block.hash[:15]}... | Transactions: {len(self.current_block.transactions_list)} | Nonce: {self.current_block.nonce}"
-                                )
+            # Permanently invalid → drop
+            if not tx.validate_transaction(sender_id, self.temp_utxos):
+                Logger.error("Transaction NOT Validated: Not enough coins — dropping")
+                self.pending_transactions.pop()
+                continue
 
-                                self.blockchain.chain.append(self.current_block)
-                                self.blockchain.UTXOs = deepcopy(self.temp_utxos)
+            # Valid transaction -> tentatively add to block
+            self.current_block.transactions_list.append(tx)
+            self.update_temp_utxos(tx)
+            self.pending_transactions.pop()
 
-                                for t in self.current_block.transactions_list:
-                                    self.update_wallet_state(t)
-                                    self.blockchain.transactions_set.add(t.transaction_id)
+            # Block full -> mine it
+            if len(self.current_block.transactions_list) == BLOCK_SIZE:
 
-                                self.dump.timestamp()
-                                self.broadcast_block(self.current_block)
+                Logger.mining(
+                    f"Block Full. Starting Proof-of-Work for transactions: "
+                    f"{self.transaction_to_string(self.current_block.transactions_list)}"
+                )
 
-                    self.create_new_block()
+                mined = self.mine_block(self.current_block)
+
+                with self.processing_block_lock:
+
+                    # Mining succeeded and no conflicting block arrived
+                    if mined and not self.incoming_block and \
+                            self.current_block.validate_block(self.blockchain):
+
+                        Logger.mining(
+                            f"Block mined successfully | Miner: Node {self.id} | "
+                            f"Hash: {self.current_block.hash[:15]}... | "
+                            f"Transactions: {len(self.current_block.transactions_list)} | "
+                            f"Nonce: {self.current_block.nonce}"
+                        )
+
+                        # Commit block
+                        self.blockchain.chain.append(self.current_block)
+                        self.blockchain.UTXOs = deepcopy(self.temp_utxos)
+
+                        for t in self.current_block.transactions_list:
+                            self.update_wallet_state(t)
+                            self.blockchain.transactions_set.add(t.transaction_id)
+
+                        self.dump.timestamp()
+                        self.broadcast_block(self.current_block)
+
+                    # Either mined by someone else or interrupted
+                    else:
+                        Logger.mining("Mining aborted — block mined elsewhere")
+
+                # Prepare new block regardless of outcome
+                self.create_new_block()
+                self.temp_utxos = deepcopy(self.blockchain.UTXOs)
 
         self.is_mining = False
 

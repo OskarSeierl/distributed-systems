@@ -6,6 +6,8 @@ import os
 from threading import Thread
 from dotenv import load_dotenv
 
+from src.utils.logger import Logger
+
 
 def send_transactions(file_path, node_addr):
     """
@@ -15,25 +17,17 @@ def send_transactions(file_path, node_addr):
     base_url = f'http://{node_addr}/api/create_transaction/'
 
     if not os.path.exists(file_path):
-        print(f"Error: Transaction file not found: {file_path}")
+        Logger.error(f"Transaction file not found: {file_path}")
         return
 
-    print(f"Starting worker for {node_addr} using {file_path}")
+    Logger.info(f"Starting worker for {node_addr} using {file_path}")
 
     with open(file_path, 'r') as f:
-        counter = 0
         for line in f:
             # Simulate user delay between typing transactions
             time.sleep(random.uniform(0.1, 0.5))
 
-            # Limit to 20 transactions per node for this test run
-            counter += 1
-            if counter > 20:
-                break
-
             parts = line.split()
-            if len(parts) < 2:
-                continue
 
             # PARSING LOGIC:
             # The file format is expected to be: "id{ID} {AMOUNT}" (e.g., "id8 5")
@@ -42,7 +36,7 @@ def send_transactions(file_path, node_addr):
                 receiver_id = int(parts[0][2])
                 amount = int(parts[1])
             except (IndexError, ValueError):
-                print(f"Skipping malformed line: {line.strip()}")
+                Logger.warning(f"Skipping malformed line: {line.strip()}")
                 continue
 
             # Simulate thinking time before hitting enter
@@ -50,17 +44,17 @@ def send_transactions(file_path, node_addr):
 
             # Construct the API endpoint: /api/create_transaction/<receiver_id>/<amount>
             request_url = f"{base_url}{receiver_id}/{amount}"
-            print(f"Sending: {request_url}")
+            Logger.info(f"Sending: {request_url}")
 
             try:
                 response = requests.get(request_url)
                 # Print response to confirm success or debug errors
                 if response.status_code == 200:
-                    print(f"Success: {response.json()}")
+                    Logger.success(f"Success: {response.json()}")
                 else:
-                    print(f"Failed ({response.status_code}): {response.text}")
+                    Logger.error(f"Failed ({response.status_code}): {response.text}")
             except requests.exceptions.RequestException as e:
-                print(f"Connection error to {node_addr}: {e}")
+                Logger.error(f"Connection error to {node_addr}: {e}")
 
 
 def main():
@@ -87,12 +81,12 @@ def main():
     difficulty = os.getenv('MINING_DIFFICULTY', 'Unknown')
     bootstrap_port = os.getenv('BOOTSTRAP_PORT')
 
-    print(f"--- CONFIGURATION ---")
-    print(f"Nodes: {args.nodes}")
-    print(f"Capacity: {capacity}")
-    print(f"Difficulty: {difficulty}")
-    print(f"Transaction Folder: {transaction_folder}")
-    print(f"---------------------")
+    Logger.info(f"--- CONFIGURATION ---")
+    Logger.info(f"Nodes: {args.nodes}")
+    Logger.info(f"Capacity: {capacity}")
+    Logger.info(f"Difficulty: {difficulty}")
+    Logger.info(f"Transaction Folder: {transaction_folder}")
+    Logger.info(f"---------------------")
 
     with open(f'testing/results_{args.nodes}nodes.txt', 'a') as f:
         f.write(f'CAPACITY:{capacity}, DIFFICULTY:{difficulty}, NODES:{args.nodes}\n')
@@ -105,10 +99,14 @@ def main():
     # We create one thread per node. Each thread reads its specific transaction file
     # and sends those transactions to its assigned node.
     threads = []
-    print("Starting transaction threads...")
+    Logger.info("Starting transaction threads...")
 
     for i, node_addr in enumerate(nodes):
-        t = Thread(target=send_transactions, args=(f"{transaction_folder}/transactions{i}.txt", node_addr))
+        t = Thread(
+            target=send_transactions,
+            name=f"Worker-{i}",
+            args=(f"{transaction_folder}/transactions{i}.txt", node_addr)
+        )
         threads.append(t)
         t.start()
 
@@ -116,8 +114,7 @@ def main():
     for t in threads:
         t.join()
 
-    print("All transaction threads finished.")
-
+    Logger.info("All transaction threads finished.")
 
 if __name__ == "__main__":
     main()

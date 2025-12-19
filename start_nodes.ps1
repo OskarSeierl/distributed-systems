@@ -12,7 +12,7 @@ Write-Host "Starting Blockchain Simulation with $NodeCount nodes..." -Foreground
     $port = 8000 + $nodeId
 
     # Construct the command string
-    $args = "python -m src.noobcash.api --port $port --ip 127.0.0.1"
+    $args = "python -m src.noobcash.api --port $port --ip 127.0.0.1 --total_nodes $NodeCount"
 
     if ($nodeId -eq 0) {
         Write-Host "Starting Bootstrap Node 0 on port $port" -ForegroundColor Cyan

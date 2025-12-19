@@ -194,22 +194,28 @@ def create_app(node: Node, total_nodes: int, total_nbc: int):
         new_block = pickle.loads(data)
         Logger.info("New block received successfully !")
 
-        with node.processing_block_lock:
-            if new_block.validate_block(node.blockchain):
-                with node.incoming_block_lock:
-                    node.incoming_block = True
-                Logger.mining("Block was mined by someone else")
-                Logger.success("Adding it to the chain")
-                node.add_block_to_chain(new_block)
-                Logger.info(f"Blockchain length: {len(node.blockchain.chain)}")
-            elif node.blockchain.chain[-1].previous_hash == new_block.previous_hash:
-                Logger.warning("Rejected incoming block")
-            else:
-                Logger.warning(f"Incoming block previous_hash: {new_block.previous_hash}")
-                Logger.info("BLOCKCHAIN")
-                Logger.info(str([block.hash[:7] for block in node.blockchain.chain]))
-                node.blockchain.resolve_conflict(node)
-                Logger.error("Something went wrong with validation")
+        def process_incoming_block(block):
+            with node.processing_block_lock:
+                if block.validate_block(node.blockchain):
+                    with node.incoming_block_lock:
+                        node.incoming_block = True
+                    Logger.info("Incoming valid block received")
+                    #Logger.mining("Block was mined by someone else")
+                    Logger.success("Adding it to the chain")
+                    node.add_block_to_chain(block)
+                    Logger.info(f"Blockchain length: {len(node.blockchain.chain)}")
+                elif node.blockchain.chain[-1].previous_hash == block.previous_hash:
+                    Logger.warning("Rejected incoming block")
+                else:
+                    Logger.warning(f"Incoming block previous_hash: {block.previous_hash}")
+                    Logger.info("BLOCKCHAIN")
+                    Logger.info(str([block.hash[:7] for block in node.blockchain.chain]))
+                    node.blockchain.resolve_conflict(node)
+                    Logger.error("Something went wrong with validation")
+
+        # Process block in a separate thread to avoid timeouts on the sender side
+        t = threading.Thread(target=process_incoming_block, args=(new_block,))
+        t.start()
 
         return make_response('OK', 200)
 
@@ -222,7 +228,11 @@ def create_app(node: Node, total_nodes: int, total_nbc: int):
 
         node.add_node_to_ring(id, ip, port_form, address, 0)
 
-        t = threading.Thread(target=check_full_ring, args=(node, total_nodes))
+        t = threading.Thread(
+            target=check_full_ring,
+            args=(node, total_nodes),
+            name="BootstrapRingCheckerThread"
+        )
         t.start()
 
         return make_response(jsonify({'id': id}), 200)
