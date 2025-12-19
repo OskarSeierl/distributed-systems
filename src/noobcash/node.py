@@ -43,7 +43,7 @@ class Node:
 
         self.incoming_block_lock = threading.Lock()
         self.processing_block_lock = threading.Lock()
-        self.dump = Dump(total_nodes)
+        self.dump = Dump(total_nodes, BLOCK_SIZE, MINING_DIFFICULTY)
 
     # --- Block & Transaction Management ---
 

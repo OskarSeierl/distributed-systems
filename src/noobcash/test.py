@@ -88,7 +88,7 @@ def main():
     Logger.info(f"Transaction Folder: {transaction_folder}")
     Logger.info(f"---------------------")
 
-    with open(f'testing/results_{args.nodes}nodes.txt', 'a') as f:
+    with open(f'testing/results/results_{args.nodes}nodes_{capacity}blocksize_{difficulty}difficulty.txt', 'a') as f:
         f.write(f'CAPACITY:{capacity}, DIFFICULTY:{difficulty}, NODES:{args.nodes}\n')
 
     # 3. Load Network Addresses
