@@ -55,7 +55,7 @@ class Blockchain:
         for peer in node.ring.values():
             if peer['id'] != node.id:
                 try:
-                    url = f"http://{peer['ip']}:{peer['port']}/api/get_chain_length"
+                    url = f"http://{peer['ip']}:{peer['port']}/blockchain/length"
                     response = requests.get(url, timeout=3)
 
                     if response.status_code == 200:
@@ -74,7 +74,7 @@ class Blockchain:
 
             # 3. Fetch the new chain
             try:
-                url = f"http://{best_node['ip']}:{best_node['port']}/api/get_chain"
+                url = f"http://{best_node['ip']}:{best_node['port']}/blockchain"
                 response = requests.get(url, timeout=10)
                 new_chain = pickle.loads(response.content)
 

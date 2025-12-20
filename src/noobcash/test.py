@@ -14,7 +14,7 @@ def send_transactions(file_path, node_addr):
     Worker function executed by each thread.
     Reads a transaction file line-by-line and sends requests to the specific node.
     """
-    base_url = f'http://{node_addr}/api/create_transaction/'
+    base_url = f'http://{node_addr}/transactions/create/'
 
     if not os.path.exists(file_path):
         Logger.error(f"Transaction file not found: {file_path}")
@@ -42,7 +42,7 @@ def send_transactions(file_path, node_addr):
             # Simulate thinking time before hitting enter
             time.sleep(random.uniform(1, 2))
 
-            # Construct the API endpoint: /api/create_transaction/<receiver_id>/<amount>
+            # Construct the API endpoint: /transactions/create/<receiver_id>/<amount>
             request_url = f"{base_url}{receiver_id}/{amount}"
             Logger.info(f"Sending: {request_url}")
 

@@ -38,7 +38,7 @@
     <script>
         async function getNodeInfo() {
             try {
-                const response = await fetch('/api/node_info');
+                const response = await fetch('/node/info');
                 const data = await response.json();
                 document.getElementById('node-info').innerHTML = `
                     <h2>Node Information</h2>
@@ -55,7 +55,7 @@
 
         async function viewTransactions() {
             try {
-                const response = await fetch('/api/view_transactions');
+                const response = await fetch('/transactions/view');
                 const data = await response.json();
 
                 let html = '';
@@ -85,7 +85,7 @@
             }
 
             try {
-                const response = await fetch(`/api/create_transaction/${receiverId}/${amount}`);
+                const response = await fetch(`/transactions/create/${receiverId}/${amount}`);
                 const data = await response.json();
 
                 if (response.ok) {

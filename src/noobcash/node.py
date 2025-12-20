@@ -304,7 +304,7 @@ class Node:
         """
         for node in self.ring.values():
             if node['id'] != self.id:
-                url = f"http://{node['ip']}:{node['port']}/get_transaction"
+                url = f"http://{node['ip']}:{node['port']}/transactions/receive"
                 try:
                     requests.post(url, data=pickle.dumps(transaction), timeout=5)
                 except requests.exceptions.RequestException:
@@ -317,7 +317,7 @@ class Node:
         :param node: The node dictionary.
         :param block: The Block object.
         """
-        url = f"http://{node['ip']}:{node['port']}/get_block"
+        url = f"http://{node['ip']}:{node['port']}/blocks/receive"
         try:
             requests.post(url, data=pickle.dumps(block), timeout=5)
         except requests.exceptions.RequestException as e:
@@ -341,7 +341,7 @@ class Node:
 
         :param node: The bootstrap node dictionary containing IP and port.
         """
-        url = f"http://{node['ip']}:{node['port']}/let_me_in"
+        url = f"http://{node['ip']}:{node['port']}/nodes/register"
         try:
             response = requests.post(url, data={
                 'ip': self.ip,
@@ -376,7 +376,7 @@ class Node:
 
         :param node: The target node dictionary.
         """
-        url = f"http://{node['ip']}:{node['port']}/get_ring"
+        url = f"http://{node['ip']}:{node['port']}/ring/receive"
         try:
             requests.post(url, data=pickle.dumps(self.ring))
         except requests.exceptions.RequestException:
@@ -397,7 +397,7 @@ class Node:
 
         :param node: The target node dictionary.
         """
-        url = f"http://{node['ip']}:{node['port']}/get_blockchain"
+        url = f"http://{node['ip']}:{node['port']}/blockchain/receive"
         try:
             requests.post(url, data=pickle.dumps(self.blockchain))
         except requests.exceptions.RequestException:

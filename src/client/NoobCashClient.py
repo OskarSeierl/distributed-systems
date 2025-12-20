@@ -54,7 +54,7 @@ class NoobCashClient:
         :return: True if the node is active, False otherwise.
         """
         try:
-            url = f"{self.get_address(port)}/api/get_balance"
+            url = f"{self.get_address(port)}/balance"
             requests.get(url, timeout=2)
             return True
         except requests.exceptions.RequestException:
@@ -89,7 +89,7 @@ class NoobCashClient:
 
         print(f"Sending {amount} NoobCoins to client {recipient}...")
         try:
-            url = f"{self.get_address()}/api/create_transaction/{recipient}/{amount}"
+            url = f"{self.get_address()}/transactions/create/{recipient}/{amount}"
             response = requests.get(url)
             print(f"Response: {response.json()}")
         except requests.exceptions.RequestException as e:
@@ -100,7 +100,7 @@ class NoobCashClient:
         Fetches and displays the transactions in the last validated block.
         """
         try:
-            url = f"{self.get_address()}/api/view_transactions"
+            url = f"{self.get_address()}/transactions/view"
             response = requests.get(url)
             data = response.json()
 
@@ -123,7 +123,7 @@ class NoobCashClient:
         Fetches and displays the current wallet balance.
         """
         try:
-            url = f"{self.get_address()}/api/get_balance"
+            url = f"{self.get_address()}/balance"
             response = requests.get(url)
             print(f"💰 Current Balance: {response.json()} NBC")
         except Exception as e:
@@ -168,7 +168,7 @@ class NoobCashClient:
             if self.check_connection(p):
                 status = "🟢 Online"
                 try:
-                    url = f"{self.get_address(p)}/api/get_balance"
+                    url = f"{self.get_address(p)}/balance"
                     res = requests.get(url, timeout=0.5)
                     balance = str(res.json())
                 except:

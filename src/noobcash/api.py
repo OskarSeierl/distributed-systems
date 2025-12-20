@@ -109,7 +109,7 @@ def create_app(node: Node, total_nodes: int, total_nbc: int):
     app = Flask(__name__)
     CORS(app, resources={r"/*": {"origins": "*"}})
 
-    @app.route("/api/create_transaction/<int:receiver_id>/<int:amount>", methods=['GET'])
+    @app.route("/transactions/create/<int:receiver_id>/<int:amount>", methods=['GET'])
     def create_transaction(receiver_id: int, amount: int):
         if receiver_id >= total_nodes:
             return make_response(jsonify({"message": 'Node ID does not exist'}), 400)
@@ -120,8 +120,8 @@ def create_app(node: Node, total_nodes: int, total_nbc: int):
         node.broadcast_transaction(transaction)
         return make_response(jsonify({'message': 'Successful Transaction !'}), 200)
 
-    @app.route("/api/view_transactions", methods=['GET'])
-    def view_transactions():
+    @app.route("/transactions/view", methods=['GET'])
+    def get_transactions():
         if len(node.blockchain.chain) <= 1:
             return jsonify('There are no mined blocks at the moment !')
 
@@ -136,21 +136,21 @@ def create_app(node: Node, total_nodes: int, total_nbc: int):
 
         return make_response(jsonify(transactions), 200)
 
-    @app.route("/api/get_balance", methods=['GET'])
+    @app.route("/balance", methods=['GET'])
     def get_balance():
         balance = node.ring[node.wallet.address]['balance']
         return make_response(jsonify({'balance': balance}), 200)
 
-    @app.route("/api/get_chain_length", methods=['GET'])
-    def get_chain_length():
+    @app.route("/blockchain/length", methods=['GET'])
+    def get_blockchain_length():
         chain_len = len(node.blockchain.chain)
         return make_response(jsonify({'chain_length': chain_len}), 200)
 
-    @app.route("/api/get_chain", methods=['GET'])
-    def get_chain():
+    @app.route("/blockchain", methods=['GET'])
+    def get_blockchain():
         return Response(pickle.dumps(node.blockchain), mimetype='application/octet-stream')
 
-    @app.route("/api/node_info", methods=['GET'])
+    @app.route("/node/info", methods=['GET'])
     def get_node_info():
         return make_response(jsonify({
             'id': node.id,
@@ -160,36 +160,35 @@ def create_app(node: Node, total_nodes: int, total_nbc: int):
             'balance': node.ring[node.wallet.address]['balance'] if node.wallet.address in node.ring else 0
         }), 200)
 
-    # INTERNAL ROUTES
     @app.route("/", methods=['GET'])
     def root():
         return render_template('index.html')
 
-    @app.route("/get_ring", methods=['POST'])
-    def get_ring():
+    @app.route("/ring/receive", methods=['POST'])
+    def receive_ring():
         data = request.data
         node.ring = pickle.loads(data)
         Logger.success("Ring received successfully !")
         return make_response('OK', 200)
 
-    @app.route("/get_blockchain", methods=['POST'])
-    def get_blockchain():
+    @app.route("/blockchain/receive", methods=['POST'])
+    def receive_blockchain():
         data = request.data
         node.blockchain = pickle.loads(data)
         node.temp_utxos = deepcopy(node.blockchain.UTXOs)
         Logger.success("Blockchain received successfully !")
         return make_response('OK', 200)
 
-    @app.route("/get_transaction", methods=['POST'])
-    def get_transaction():
+    @app.route("/transactions/receive", methods=['POST'])
+    def receive_transaction():
         data = request.data
         new_transaction = pickle.loads(data)
         Logger.info("New transaction received successfully !")
         node.add_transaction_to_pending(new_transaction)
         return make_response('OK', 200)
 
-    @app.route("/get_block", methods=['POST'])
-    def get_block():
+    @app.route("/blocks/receive", methods=['POST'])
+    def receive_block():
         data = request.data
         new_block = pickle.loads(data)
         Logger.info("New block received successfully !")
@@ -219,8 +218,8 @@ def create_app(node: Node, total_nodes: int, total_nbc: int):
 
         return make_response('OK', 200)
 
-    @app.route("/let_me_in", methods=['POST'])
-    def let_me_in():
+    @app.route("/nodes/register", methods=['POST'])
+    def register_node():
         ip = request.form.get('ip')
         port_form = request.form.get('port')
         address = request.form.get('address')
