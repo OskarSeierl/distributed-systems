@@ -5,7 +5,7 @@
 | Name | ID       | Email                     | GitHub        |
 | --- |----------|---------------------------|---------------|
 | Oskar Seierl | el25562  | oskar.seierl@tuwien.ac.at | `OskarSeierl` |
-| Member Two | Backend  | member2@example.com       | `member2`     |
+| Juan Gomez Rey | el25561  | jugorey@hotmail.com       | `Juangomezzr`|
 | Member Three | Research | member3@example.com       | `member3`     |
 | Member Three | Research | member3@example.com       | `member3`     |
 
