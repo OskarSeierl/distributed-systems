@@ -147,7 +147,11 @@ Each UTXO stores:
 
 UTXOs are used to track wallet balances and validate transactions. A wallet’s balance is computed as the sum of all UTXOs where it is the receiver. When a transaction is confirmed, the corresponding UTXOs are consumed and new UTXOs are created to reflect the transfer and any remaining change.
 #### Wallet
-TODO
+The Wallet class represents a user’s identity and cryptographic account in the NoobCash system.
+
+Each wallet generates a 2048-bit RSA key pair upon initialization. The private key is used to sign transactions, while the public key is exported and used as the wallet’s address. This address uniquely identifies the wallet within the network.
+
+The wallet also maintains a local list of transactions associated with it, allowing the node to track incoming and outgoing transfers.
 
 ### General Description
 TODO
