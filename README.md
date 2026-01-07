@@ -138,7 +138,14 @@ Signature verification is performed by verify_signature(), which uses the sender
 
 For serialization and logging, to_dict() provides a dictionary representation of the transaction.
 #### UTXO
-TODO
+The UTXO (Unspent Transaction Output) class represents a single unspent output created by a transaction.
+
+Each UTXO stores:
+	•	the sender identifier,
+	•	the receiver identifier (owner of the funds),
+	•	and the amount of NoobCoins it represents.
+
+UTXOs are used to track wallet balances and validate transactions. A wallet’s balance is computed as the sum of all UTXOs where it is the receiver. When a transaction is confirmed, the corresponding UTXOs are consumed and new UTXOs are created to reflect the transfer and any remaining change.
 #### Wallet
 TODO
 
