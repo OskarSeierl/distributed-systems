@@ -154,7 +154,19 @@ Each wallet generates a 2048-bit RSA key pair upon initialization. The private k
 The wallet also maintains a local list of transactions associated with it, allowing the node to track incoming and outgoing transfers.
 
 ### General Description
-TODO
+This project implements NoobCash, a distributed cryptocurrency system based on a blockchain with Proof-of-Work consensus. Each node in the network operates independently while maintaining a consistent view of the ledger through block validation, transaction propagation, and conflict resolution.
+
+At startup, one node acts as the bootstrap node, responsible for initializing the network, creating the genesis block, registering participating nodes, and distributing the initial NoobCoin (NBC) balances. All other nodes register with the bootstrap and receive the full network topology (ring) and blockchain state.
+
+Each node maintains:
+	•	a wallet with a public/private RSA key pair,
+	•	a local copy of the blockchain,
+	•	a UTXO set for balance tracking and transaction validation,
+	•	a pool of pending transactions awaiting confirmation.
+
+Transactions are digitally signed by the sender, validated using UTXOs, and broadcast to all nodes. Nodes collect valid transactions into blocks and perform Proof-of-Work mining by searching for a nonce that satisfies the configured difficulty. Newly mined blocks are broadcast to the network and independently validated by peers before being appended to their local chains.
+
+To handle forks or inconsistencies, nodes apply a longest valid chain consensus mechanism. Performance metrics such as block creation time are recorded during execution to support experimental evaluation and scalability analysis.
 
 ## Problems Encountered
 ### Transaction Loss
