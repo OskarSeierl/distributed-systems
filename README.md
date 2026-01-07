@@ -72,7 +72,17 @@ TODO
 ## Explanation of the Project
 ### Classes
 #### Api
-TODO
+api.py is the network interface layer of the NoobCash system. It wraps a Node instance inside a Flask HTTP server and exposes REST endpoints so that:
+	1.	Users / clients can create transactions and query the node’s state (balance, blockchain length, latest block transactions).
+	2.	Nodes can communicate with each other by sending and receiving:
+	•	the ring (peer registry),
+	•	the blockchain,
+	•	transactions,
+	•	blocks.
+
+This file is also responsible for bootstrapping logic: identifying whether a node is the bootstrap node, 
+registering nodes to the cluster, creating the genesis block, 
+and triggering the initial NBC distribution when all nodes have joined.
 #### Block
 TODO
 #### Blockchain
