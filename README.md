@@ -84,7 +84,18 @@ This file is also responsible for bootstrapping logic: identifying whether a nod
 registering nodes to the cluster, creating the genesis block, 
 and triggering the initial NBC distribution when all nodes have joined.
 #### Block
-TODO
+The Block class represents a single block in the blockchain.
+
+A block stores the hash of the previous block, a timestamp, a nonce used for Proof-of-Work, and a list of transactions. The block hash is generated using the calculate_hash() method, which computes a SHA-256 hash over the block’s nonce, timestamp, transaction identifiers, and previous block hash.
+
+Mining is performed by repeatedly modifying the nonce and recomputing the hash until the hash satisfies the required difficulty (leading zeros).
+
+The method validate_block(blockchain) is used when a block is received from another node. It verifies that:
+	1.	the block correctly references the hash of the previous block in the chain, and
+	2.	the block hash satisfies the Proof-of-Work difficulty.
+
+A special case is handled for the genesis block, which is always considered valid.
+
 #### Blockchain
 TODO
 #### Dump
