@@ -97,7 +97,14 @@ The method validate_block(blockchain) is used when a block is received from anot
 A special case is handled for the genesis block, which is always considered valid.
 
 #### Blockchain
-TODO
+The Blockchain class manages the local blockchain ledger and the state needed for validation and consensus.
+	•	It stores the chain as a list of blocks (self.chain) and keeps configuration values such as mining difficulty (self.difficulty) and the maximum number of transactions per block (self.maxBlockTransactions), loaded from environment variables.
+	•	It maintains the UTXO state in self.UTXOs (indexed by client_id) and tracks seen transactions using self.transactions_set to help prevent duplicates.
+
+Key functions:
+	•	validate_chain() iterates through the entire chain to verify integrity. It explicitly checks the genesis block (previous_hash = 1, nonce = 0) and calls each block’s validate_block(self) for all subsequent blocks.
+	•	resolve_conflict(node) implements the consensus protocol (longest valid chain). It queries peers for /blockchain/length, selects the node with the longest chain, downloads it from /blockchain, and replaces the local blockchain if a longer one is found.
+	•	wallet_balance(client_id) computes a wallet’s balance by summing the amounts of all UTXOs belonging to the given client ID.
 #### Dump
 TODO
 #### Node
