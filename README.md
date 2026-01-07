@@ -128,7 +128,15 @@ Key responsibilities and functions:
 	•	Receiving blocks and synchronization: When an externally mined block is accepted, add_block_to_chain(block) appends it, updates UTXOs and balances, removes mined transactions from the pending pool using update_pending_transactions(incoming_block), and resets mining flags/temporary state. Concurrency is handled using incoming_block_lock and processing_block_lock to coordinate mining vs incoming blocks.
 	•	Bootstrap distribution: The bootstrap node can distribute the initial funds using broadcast_initial_nbc() / unicast_initial_nbc() after the ring is complete, ensuring each node receives its initial NBC balance.
 #### Transaction
-TODO
+The Transaction class represents a transfer of NoobCoins between two wallets.
+
+A transaction stores the sender and receiver wallet addresses, the transferred amount, a unique transaction identifier, and a cryptographic signature. The transaction ID is generated using calculate_hash(), which assigns a random unique value to each transaction.
+
+To ensure authenticity, the transaction is signed using the sender’s private key via sign_transaction(private_key). The signature is created over a deterministic payload produced by get_sign_payload(), ensuring consistent hashing across nodes.
+
+Signature verification is performed by verify_signature(), which uses the sender’s public key to confirm the transaction’s authenticity. Transaction validity is further checked using validate_transaction(utxo_id, utxos), which verifies both the signature and that the sender has sufficient funds based on the current UTXO set.
+
+For serialization and logging, to_dict() provides a dictionary representation of the transaction.
 #### UTXO
 TODO
 #### Wallet
