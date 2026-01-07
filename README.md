@@ -106,7 +106,16 @@ Key functions:
 	•	resolve_conflict(node) implements the consensus protocol (longest valid chain). It queries peers for /blockchain/length, selects the node with the longest chain, downloads it from /blockchain, and replaces the local blockchain if a longer one is found.
 	•	wallet_balance(client_id) computes a wallet’s balance by summing the amounts of all UTXOs belonging to the given client ID.
 #### Dump
-TODO
+The Dump class is used for performance evaluation and benchmarking of the blockchain system.
+
+It records timing information during block creation in order to measure metrics such as block time and throughput under different configurations (number of nodes, block size, and mining difficulty).
+
+The method timestamp() is called whenever a new block is processed. It:
+	•	records the current time,
+	•	computes the time elapsed since the previous block,
+	•	and appends the block index, absolute timestamp, and block interval to a results file whose name encodes the experiment parameters.
+
+This data is later used to analyze system performance and scalability.
 #### Node
 TODO
 #### Transaction
