@@ -117,7 +117,16 @@ The method timestamp() is called whenever a new block is processed. It:
 
 This data is later used to analyze system performance and scalability.
 #### Node
-TODO
+The Node class represents a participant in the NoobCash network. It combines the local wallet, blockchain state, UTXO management, mining logic, and all peer-to-peer communication.
+
+Key responsibilities and functions:
+	•	Local state & network metadata: Initializes a Wallet, a local Blockchain, and a ring registry ({address: {id, ip, port, balance}}). Nodes join the network via unicast_node() (register to bootstrap) and bootstrap maintains membership using add_node_to_ring().
+	•	Block creation & transaction pool: Creates candidate blocks with create_new_block() and stores incoming/unconfirmed transactions in pending_transactions. New transactions are inserted through add_transaction_to_pending(), which also starts the mining thread when idle.
+	•	Transaction creation & propagation: Builds signed transactions using create_transaction(receiver_address, amount), and propagates them to peers via broadcast_transaction(transaction).
+	•	UTXO and balance updates: Maintains balances and UTXO sets. UTXOs are updated through _process_utxo_update() (shared helper), with update_original_utxos() applying confirmed changes and update_temp_utxos() applying changes to a temporary UTXO snapshot used during mining. Wallet/ring balances are updated with update_wallet_state(tx).
+	•	Mining / Proof-of-Work: The mining loop runs in mine_process(). It validates pending transactions against temp_utxos, fills a block up to BLOCK_SIZE, and performs PoW using mine_block(block) (random nonce search until the hash meets MINING_DIFFICULTY). On success, it commits the block, updates state, records benchmarking data via dump.timestamp(), and broadcasts the block with broadcast_block(block).
+	•	Receiving blocks and synchronization: When an externally mined block is accepted, add_block_to_chain(block) appends it, updates UTXOs and balances, removes mined transactions from the pending pool using update_pending_transactions(incoming_block), and resets mining flags/temporary state. Concurrency is handled using incoming_block_lock and processing_block_lock to coordinate mining vs incoming blocks.
+	•	Bootstrap distribution: The bootstrap node can distribute the initial funds using broadcast_initial_nbc() / unicast_initial_nbc() after the ring is complete, ensuring each node receives its initial NBC balance.
 #### Transaction
 TODO
 #### UTXO
