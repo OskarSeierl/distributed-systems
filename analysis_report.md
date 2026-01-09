@@ -113,10 +113,10 @@ Sample results:
 ### 4.7.3 Graphs (Difficulty = 5)
 
 - **Transaction Time vs. Node ID (Difficulty = 5)**  
-  (https://github.com/OskarSeierl/distributed-systems/blob/main/images/Figure_3.1.png)
+  ![Transaction Time Graph](https://github.com/OskarSeierl/distributed-systems/blob/main/images/Figure_3.1.png)
 
 - **Block Time vs. Node ID (Difficulty = 5)**  
-  (https://github.com/OskarSeierl/distributed-systems/blob/main/images/Figure_3.2.png)
+  ![Block Time Graph](https://github.com/OskarSeierl/distributed-systems/blob/main/images/Figure_3.2.png)
 
 ### 4.7.4 Interpretation
 
@@ -135,5 +135,6 @@ From the analysis of **Transaction Time** and **Block Time** across different no
 - The system has been tested with different **node capacities** and **difficulty levels**. The system performed efficiently with **5 nodes** and scaled well to **10 nodes** with minimal impact on **Transaction Time** and **Block Time**.
 - The difficulty levels (4 and 5) were simulated by adjusting the **Block Time** based on the given difficulty. The change in difficulty resulted in a corresponding change in **Block Time**, confirming that mining difficulty directly influences block mining duration.
 - The single-node (1 node) scenario was used as a baseline reference to compare performance behavior under increased network size.
+
 
 
