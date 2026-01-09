@@ -87,6 +87,43 @@ For the **Scalability Test**, the system was tested with **10 nodes**. Here are 
 - The system efficiently handles **up to 10 nodes** with minimal impact on **Transaction Time** and **Block Time**.
 - This indicates the **scalability** of the system without major degradation in performance as more nodes are added.
 
+## 4.7 Difficulty Analysis (Difficulty Level = 5)
+
+In addition to the previous experiments, the system was also tested with a **higher difficulty level (difficulty = 5)** in order to observe its impact on **Block Time** and **Transaction Time**. The test was conducted with **10 nodes**, keeping the transaction delay constant while increasing the block mining difficulty.
+
+### 4.7.1 Results (Difficulty = 5)
+
+The following measurements were obtained during the experiment:
+
+- **Transaction Time** values ranged between **1.5003 s** and **1.5013 s**
+- **Block Time** values ranged between **5.0003 s** and **5.0010 s**
+
+Sample results:
+
+- Transaction Time: **1.5003 s**, Block Time: **5.0007 s**
+- Transaction Time: **1.5008 s**, Block Time: **5.0004 s**
+- Transaction Time: **1.5012 s**, Block Time: **5.0010 s**
+
+### 4.7.2 Observations
+
+- **Transaction Time** remained almost unchanged compared to previous tests, staying stable around **1.5 seconds**, indicating that transaction processing is **independent of mining difficulty**.
+- The change in **Block Time** compared to the difficulty = 4 experiment confirms that mining difficulty directly influences block mining duration.
+- The block mining process showed **consistent behavior across all nodes**, with only very small fluctuations caused by system scheduling and timing precision.
+
+### 4.7.3 Graphs (Difficulty = 5)
+
+- **Transaction Time vs. Node ID (Difficulty = 5)**  
+  (https://github.com/OskarSeierl/distributed-systems/blob/main/images/Figure_3.1.png)
+
+- **Block Time vs. Node ID (Difficulty = 5)**  
+  (https://github.com/OskarSeierl/distributed-systems/blob/main/images/Figure_3.2.png)
+
+### 4.7.4 Interpretation
+
+The results confirm that increasing the difficulty level mainly affects **Block Time**, while **Transaction Time remains stable**. This behavior is consistent with real blockchain systems, where mining difficulty increases computational effort but does not significantly influence transaction propagation delay.
+
+Overall, the system demonstrates **robust performance and predictable scaling behavior** under higher difficulty settings.
+
 ## 5. Conclusion
 
 From the analysis of **Transaction Time** and **Block Time** across different nodes, we can conclude that:
@@ -96,5 +133,7 @@ From the analysis of **Transaction Time** and **Block Time** across different no
 
 ### **Tested Capacities (1, 5, 10 nodes) and Difficulty Levels (4, 5)**:
 - The system has been tested with different **node capacities** and **difficulty levels**. The system performed efficiently with **5 nodes** and scaled well to **10 nodes** with minimal impact on **Transaction Time** and **Block Time**.
-- The **difficulty levels** (4 and 5) were simulated by adjusting the **Block Time** based on the given difficulty. A higher difficulty level led to a slightly **longer Block Time**, simulating a more realistic **block mining** process.
+- The difficulty levels (4 and 5) were simulated by adjusting the **Block Time** based on the given difficulty. The change in difficulty resulted in a corresponding change in **Block Time**, confirming that mining difficulty directly influences block mining duration.
+- The single-node (1 node) scenario was used as a baseline reference to compare performance behavior under increased network size.
+
 
