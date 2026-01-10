@@ -193,7 +193,7 @@ This repository contains an in-depth performance and scalability analysis of the
 - **Scalability Test**: Conducted with **10 nodes**, showing minimal impact on performance as the number of nodes increased.
 - **Difficulty Test**: Two difficulty levels (4 and 5) were tested, with **difficulty = 5** leading to slightly increased **block mining times**.
 
-The complete analysis and results, including **graphs**, are detailed in the analysis_report.
+The complete analysis and results, including **graphs**, are detailed in the 'analysis_report.md'.
 
 ### To Reproduce the Tests
 - **Run the tests** for 5 nodes, 10 nodes, and varying difficulty levels using the provided client scripts. The results and performance metrics will be logged in `transaction_data.txt`.
