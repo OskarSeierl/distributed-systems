@@ -180,3 +180,21 @@ Since invalid transactions were not removed from the pending pool, the miner rep
 ### State Inconsistency During Mining
 Mining initially reused the global UTXO state, causing inconsistencies between transaction creation and validation.
 This was resolved by introducing a temporary UTXO set for each mining round, ensuring that transaction validation during mining reflects a consistent and isolated state.
+
+--------------------------------------------------
+## Blockchain Performance and Scalability Analysis
+
+This repository contains an in-depth performance and scalability analysis of the blockchain system, including tests with **1, 5, and 10 nodes** and varying **difficulty levels** (4 and 5).
+
+### Key Highlights:
+- **Transaction Time**: The time to process a transaction between nodes. The system performed efficiently, with minimal delay (~1.5 seconds).
+- **Block Time**: The time to mine a block, which was consistent but increased slightly with higher difficulty levels.
+- **Performance Test**: Conducted with **5 nodes** to evaluate the system's efficiency under typical conditions.
+- **Scalability Test**: Conducted with **10 nodes**, showing minimal impact on performance as the number of nodes increased.
+- **Difficulty Test**: Two difficulty levels (4 and 5) were tested, with **difficulty = 5** leading to slightly increased **block mining times**.
+
+The complete analysis and results, including **graphs**, are detailed in the [**analysis_report.md**](./analysis_report.md).
+
+### To Reproduce the Tests
+- **Run the tests** for 5 nodes, 10 nodes, and varying difficulty levels using the provided client scripts. The results and performance metrics will be logged in `transaction_data.txt`.
+-------------------------------------------------
