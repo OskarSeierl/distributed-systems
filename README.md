@@ -181,7 +181,8 @@ Since invalid transactions were not removed from the pending pool, the miner rep
 Mining initially reused the global UTXO state, causing inconsistencies between transaction creation and validation.
 This was resolved by introducing a temporary UTXO set for each mining round, ensuring that transaction validation during mining reflects a consistent and isolated state.
 
---------------------------------------------------
+
+
 ## Blockchain Performance and Scalability Analysis
 
 This repository contains an in-depth performance and scalability analysis of the blockchain system, including tests with **1, 5, and 10 nodes** and varying **difficulty levels** (4 and 5).
@@ -195,6 +196,3 @@ This repository contains an in-depth performance and scalability analysis of the
 
 The complete analysis and results, including **graphs**, are detailed in the 'analysis_report.md'.
 
-### To Reproduce the Tests
-- **Run the tests** for 5 nodes, 10 nodes, and varying difficulty levels using the provided client scripts. The results and performance metrics will be logged in `transaction_data.txt`.
--------------------------------------------------
