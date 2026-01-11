@@ -68,6 +68,14 @@ Transaction Time: 1.5009503364562988 seconds
 Block Time: 4.0008018016815186 seconds
 Transaction Time: 1.500314712524414 seconds
 Block Time: 4.001163721084595 seconds
+Transaction Time: 1.5007338523864746 seconds
+Block Time: 4.0011305809021 seconds
+Transaction Time: 1.5007340908050537 seconds
+Block Time: 4.000757932662964 seconds
+Transaction Time: 1.500793695449829 seconds
+Block Time: 4.000691652297974 seconds
+Transaction Time: 1.5019686222076416 seconds
+Block Time: 4.000770092010498 seconds
 Transaction Time: 1.5002601146697998 seconds
 Block Time: 5.000430583953857 seconds
 Transaction Time: 1.500739336013794 seconds
@@ -88,7 +96,3 @@ Transaction Time: 1.5008485317230225 seconds
 Block Time: 5.0010316371917725 seconds
 Transaction Time: 1.5012810230255127 seconds
 Block Time: 5.000365257263184 seconds
-
-
-
-
