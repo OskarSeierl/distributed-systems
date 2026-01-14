@@ -7,7 +7,7 @@
 | Oskar Seierl | el25562  | oskar.seierl@tuwien.ac.at | `OskarSeierl` |
 | Juan Gomez Rey | el25561  | jugorey@hotmail.com       | `Juangomezzr`|
 | Fatma Zehra Aras | el25553 | fatmazehra.aras@stu.fsm.edu.tr       | `fzehraaras`     |
-| Member Three | Research | member3@example.com       | `member3`     |
+| Muhammed Gelgör | el25552 | Muhammed.gelgor@stu.fsm.edu.tr | `MGelgor`     |
 
 ## Usage
 ### Get Started
